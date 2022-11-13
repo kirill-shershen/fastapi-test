@@ -1,0 +1,51 @@
+version: '3.8'
+
+x-web:
+  &x-web-common
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: always
+  environment:
+    &x-web-environment
+    DEBUG: ${DEBUG}
+    DB_NAME: ${DB_NAME}
+    DB_PASSWORD: ${DB_PASSWORD}
+    DB_USER: ${DB_USER}
+    DB_HOST: ${DB_HOST}
+    DB_PORT: ${DB_PORT}
+    APP_NAME: ${APP_NAME}
+    ADMIN_EMAIL: ${ADMIN_EMAIL}
+    DATABASE_URL: ${DATABASE_URL}
+    ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
+    ALGORITHM: ${ALGORITHM}
+    ENV_FILE: ${ENV_FILE}
+services:
+  db:
+    image: postgres:15
+    container_name: db
+    restart: always
+    volumes:
+      - ./db_data/:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+
+  backend:
+    <<: *x-web-common
+    environment:
+      <<: *x-web-environment
+      SECRET_KEY: ${SECRET_KEY}
+    container_name: backend
+    command: >
+      bash -c "uvicorn run:app --host 0.0.0.0 --reload"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/code:cached
+    depends_on:
+      - db

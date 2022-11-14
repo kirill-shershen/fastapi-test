@@ -1,10 +1,12 @@
 from fastapi import APIRouter
+from fastapi import Depends
 from fastapi_injector import Injected
 
 from src.auth.exceptions import ForbiddenException
 from src.core.exceptions import BadRequest
 from src.users.repositories import UserCommandRepository
 from src.users.repositories import UserQueryRepository
+from src.users.schemas import User
 from src.users.schemas import UserIn
 from src.users.schemas import UserOut
 from src.users.schemas import UserPersonalInfoIn
@@ -35,6 +37,7 @@ async def update_user(
     id: int,
     user: UserPersonalInfoIn,
     personal_info_update: UpdatePersonalInfoUserStory = Injected(UpdatePersonalInfoUserStory),
+    # current_user: User = Injected(CurrentUser)
 ):
     try:
         return await personal_info_update.update(id, user)

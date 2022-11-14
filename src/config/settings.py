@@ -11,7 +11,8 @@ class Settings(BaseSettings):
     debug: bool = False
     app_name: str = "Rialto"
     admin_email: str = ""
-    access_token_expire_minutes: int = 60
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_hours: int = 10
     algorithm: str = "HS256"
     secret_key: str = "11d197649061838c0c381612cb44462ff181f2ed68c7847471af22f83ce2aa2"
     db_name: str = "postgres"
